@@ -2,7 +2,7 @@
   "name": "atomsimulation",
   "version": "2.0.0",
   "scripts": {
-    "build": "mkdir -p public && cp -r active/* middleware.js vercel.json public/",
-    "install": "echo 'ready to launch'"
+    "build": "mkdir -p public && cp -r active middleware.js vercel.json public/",
+    "install": "echo 'atoms stabilized'"
   }
 }
