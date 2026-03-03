@@ -1,161 +1,739 @@
 <!DOCTYPE html>
-<!--
-  
-
-██╗    ██╗   ██╗
-██║    ██║   ██║
-██║    ██║   ██║
-██║    ╚██╗ ██╔╝
-███████╗╚████╔╝ 
-╚══════╝ ╚═══╝  
-                
-                        
-
-By LupineVault.com
-All images and code are owned by LupineVault (lupinevault.com) and associated developers.
-© 2025 LupineVault and all associated developers.
-
-UV Static 2.0
--
-Developed by technonyte0
--->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UV Static v2</title>
+    <title>Atom</title>
     <script src="check.js" defer></script>
     <script defer src="scripts/lstimer.js"></script>
-
-    <link rel="stylesheet" href="style/global.css" />
-    <link rel="stylesheet" href="style/browser.css" />
-    
-
-    <script
-      type="text/javascript"
-      src="https://cdn.jsdelivr.net/gh/vanjs-org/van/public/van-1.5.2.nomodule.min.js"
-    ></script>
-
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
-    ></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
-    ></script>
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/vanjs-org/van/public/van-1.5.2.nomodule.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script src="uv/uv.bundle.js" defer></script>
     <script src="uv/uv.config.js" defer></script>
     <script src="scripts/tabs.mjs" type="module" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/gh/tf7software/Font-Awesome-pro-cdn@main/js/all.js"></script>
+
     <style>
-      body {padding: 0;margin: 0;}
+      :root {
+        --void: #03020a;
+        --deep-space: #07051a;
+        --nebula-core: #0d0a2e;
+        --nebula-purple: #2a1060;
+        --nebula-blue: #0a2060;
+        --glow-violet: #7c3aed;
+        --glow-cyan: #06b6d4;
+        --glow-rose: #e11d7a;
+        --star-white: #e8e4ff;
+        --text-dim: #7a7a9d;
+        --text-mid: #a8a8cc;
+        --text-bright: #ddd8ff;
+        --electron-1: #06b6d4;
+        --electron-2: #7c3aed;
+        --electron-3: #e11d7a;
+        --ui-border: rgba(124, 58, 237, 0.25);
+        --ui-glass: rgba(13, 10, 46, 0.75);
+        --header-h: 60px;
+        --tab-h: 36px;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        background: var(--void);
+        color: var(--text-bright);
+        font-family: 'DM Sans', sans-serif;
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+      }
+
+      /* == COSMOS BACKGROUND == */
+      #cosmos-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* == SMALL SCREEN == */
+      #small-screen-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--void);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        font-family: 'Orbitron', monospace;
+        color: var(--text-mid);
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+      }
+      @media (max-width: 768px) {
+        #small-screen-overlay { display: flex; }
+      }
+
+      /* == SIDEBAR / NAV CONTAINER == */
+      .sidebar-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        backdrop-filter: blur(20px) saturate(180%);
+        background: linear-gradient(
+          180deg,
+          rgba(7, 5, 26, 0.97) 0%,
+          rgba(13, 10, 46, 0.90) 100%
+        );
+        border-bottom: 1px solid var(--ui-border);
+        box-shadow:
+          0 1px 0 rgba(124, 58, 237, 0.15),
+          0 8px 32px rgba(0,0,0,0.6),
+          0 0 60px rgba(124, 58, 237, 0.08);
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* == TOP ROW == */
+      .page-data {
+        height: var(--header-h);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+      }
+
+      /* == LOGO BUTTON == */
+      #controls > button:first-child {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px 8px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+        transition: background 0.2s;
+        text-decoration: none;
+      }
+      #controls > button:first-child:hover {
+        background: rgba(124, 58, 237, 0.12);
+      }
+
+      .atom-logo-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* Atom SVG nucleus */
+      .atom-icon {
+        width: 32px;
+        height: 32px;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .atom-icon svg {
+        width: 32px;
+        height: 32px;
+        filter: drop-shadow(0 0 6px var(--glow-violet)) drop-shadow(0 0 12px var(--glow-cyan));
+      }
+
+      .atom-wordmark {
+        font-family: 'Orbitron', monospace;
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: 0.12em;
+        color: var(--star-white);
+        text-transform: uppercase;
+        text-shadow: 0 0 20px rgba(124, 58, 237, 0.8), 0 0 40px rgba(6, 182, 212, 0.4);
+        line-height: 1;
+      }
+      .atom-wordmark span {
+        color: var(--glow-cyan);
+        text-shadow: 0 0 16px var(--glow-cyan);
+      }
+
+      /* == NAV CONTROLS == */
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+
+      #controls > span {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin-left: 4px;
+        padding: 4px 6px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(124, 58, 237, 0.18);
+        border-radius: 10px;
+      }
+
+      #controls button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-mid);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 7px;
+        transition: all 0.15s ease;
+        position: relative;
+      }
+
+      #controls button ion-icon {
+        font-size: 18px;
+        transition: color 0.15s;
+      }
+
+      #controls button:hover {
+        background: rgba(124, 58, 237, 0.18);
+        color: var(--star-white);
+        box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+      }
+      #controls button:hover ion-icon {
+        color: var(--star-white);
+        filter: drop-shadow(0 0 4px var(--glow-violet));
+      }
+
+      #options-btn:hover {
+        background: rgba(6, 182, 212, 0.15) !important;
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.3) !important;
+      }
+      #options-btn:hover ion-icon {
+        color: var(--glow-cyan) !important;
+        filter: drop-shadow(0 0 4px var(--glow-cyan)) !important;
+      }
+
+      /* Tooltips */
+      .tooltip {
+        position: absolute;
+        bottom: -32px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(7, 5, 26, 0.95);
+        border: 1px solid var(--ui-border);
+        color: var(--text-bright);
+        font-size: 0.65rem;
+        font-family: 'Space Mono', monospace;
+        letter-spacing: 0.08em;
+        padding: 4px 8px;
+        border-radius: 5px;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 200;
+        text-transform: uppercase;
+      }
+      button:hover .tooltip { opacity: 1; }
+
+      /* == URL BAR == */
+      #url-form {
+        flex: 1;
+        min-width: 0;
+      }
+
+      #url-input {
+        width: 100%;
+        height: 36px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(124, 58, 237, 0.25);
+        border-radius: 20px;
+        color: var(--text-bright);
+        font-family: 'Space Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.02em;
+        padding: 0 16px 0 40px;
+        outline: none;
+        transition: all 0.25s ease;
+        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='11' cy='11' r='7' stroke='%237a7a9d' stroke-width='2'/%3E%3Cpath d='M20 20L16.65 16.65' stroke='%237a7a9d' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: 13px center;
+        background-size: 16px;
+      }
+
+      #url-input::placeholder { color: var(--text-dim); }
+      #url-input:focus {
+        border-color: var(--glow-violet);
+        background-color: rgba(124, 58, 237, 0.07);
+        box-shadow:
+          0 0 0 1px rgba(124, 58, 237, 0.3),
+          0 0 20px rgba(124, 58, 237, 0.15),
+          inset 0 0 10px rgba(124, 58, 237, 0.05);
+        color: var(--star-white);
+      }
+
+      /* == NEW TAB BTN == */
+      #new-tab {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 36px;
+        padding: 0 14px;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(6, 182, 212, 0.2));
+        border: 1px solid rgba(124, 58, 237, 0.4);
+        border-radius: 10px;
+        color: var(--star-white);
+        font-family: 'Orbitron', monospace;
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+      }
+      #new-tab:hover {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.55), rgba(6, 182, 212, 0.35));
+        border-color: var(--glow-violet);
+        box-shadow: 0 0 16px rgba(124, 58, 237, 0.35), 0 0 6px rgba(6, 182, 212, 0.25);
+        transform: translateY(-1px);
+      }
+      #new-tab ion-icon { font-size: 16px; }
+
+      /* == TAB LIST == */
+      #tab-list {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        padding: 0 14px 0;
+        height: var(--tab-h);
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+      }
+      #tab-list::-webkit-scrollbar { display: none; }
+
+      /* Tab items injected by tabs.mjs should inherit these via CSS vars */
+      #tab-list .tab-item {
+        height: 28px;
+        padding: 0 12px;
+        border-radius: 8px 8px 0 0;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(124, 58, 237, 0.15);
+        border-bottom: none;
+        color: var(--text-dim);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.75rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        transition: all 0.15s;
+        max-width: 180px;
+      }
+      #tab-list .tab-item.active {
+        background: rgba(124, 58, 237, 0.18);
+        border-color: rgba(124, 58, 237, 0.4);
+        color: var(--star-white);
+      }
+      #tab-list .tab-item:hover {
+        background: rgba(124, 58, 237, 0.1);
+        color: var(--text-bright);
+      }
+
+      /* == MAIN CONTENT / TAB VIEW == */
+      #nav, #main-content { position: relative; z-index: 10; }
+
+      #tab-view {
+        position: fixed;
+        top: calc(var(--header-h) + var(--tab-h));
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10;
+        background: var(--deep-space);
+      }
+
+      #tab-view iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      /* == MENU OVERLAY == */
+      #menu-overlay {
+        position: fixed;
+        top: calc(var(--header-h) + var(--tab-h) + 8px);
+        right: 14px;
+        background: rgba(7, 5, 26, 0.97);
+        border: 1px solid var(--ui-border);
+        border-radius: 14px;
+        padding: 8px;
+        z-index: 500;
+        min-width: 200px;
+        box-shadow:
+          0 20px 60px rgba(0,0,0,0.7),
+          0 0 30px rgba(124, 58, 237, 0.12),
+          inset 0 1px 0 rgba(255,255,255,0.05);
+        backdrop-filter: blur(20px);
+        display: none;
+        transform: translateY(-6px);
+        opacity: 0;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+      #menu-overlay.active {
+        display: block;
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .option {
+        padding: 10px 14px;
+        border-radius: 9px;
+        color: var(--text-mid);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.82rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.15s;
+        letter-spacing: 0.02em;
+        position: relative;
+        overflow: hidden;
+      }
+      .option::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--glow-violet);
+        border-radius: 2px;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .option:hover {
+        background: rgba(124, 58, 237, 0.12);
+        color: var(--star-white);
+        padding-left: 18px;
+      }
+      .option:hover::before { opacity: 1; }
+
+      #devtools-option::after { content: '⚛'; margin-left: auto; font-size: 0.9rem; opacity: 0.5; }
+      #abc-option::after { content: '⬡'; margin-left: auto; font-size: 0.9rem; opacity: 0.5; }
+      #git-option::after { content: '↗'; margin-left: auto; font-size: 0.9rem; opacity: 0.5; }
+
+      .menu-divider {
+        height: 1px;
+        background: var(--ui-border);
+        margin: 6px 0;
+      }
+
+      .menu-label {
+        padding: 6px 14px 2px;
+        font-family: 'Orbitron', monospace;
+        font-size: 0.55rem;
+        letter-spacing: 0.15em;
+        color: var(--text-dim);
+        text-transform: uppercase;
+      }
+
+      /* == NEW TAB HOME SCREEN == */
+      #home-screen {
+        position: fixed;
+        inset: calc(var(--header-h) + var(--tab-h)) 0 0 0;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 48px;
+      }
+
+      .home-hero {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .home-atom-svg {
+        width: 100px;
+        height: 100px;
+        animation: atomSpin 12s linear infinite;
+        filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.6)) drop-shadow(0 0 40px rgba(6, 182, 212, 0.3));
+      }
+
+      @keyframes atomSpin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .home-title {
+        font-family: 'Orbitron', monospace;
+        font-size: 3.2rem;
+        font-weight: 900;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, var(--star-white) 0%, var(--glow-cyan) 50%, var(--glow-violet) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        text-shadow: none;
+        position: relative;
+      }
+
+      .home-subtitle {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.3em;
+        color: var(--text-dim);
+        text-transform: uppercase;
+      }
+      .home-subtitle span {
+        color: var(--glow-cyan);
+        text-shadow: 0 0 8px var(--glow-cyan);
+      }
+
+      /* Quick link cards */
+      .quick-links {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 700px;
+      }
+
+      .quick-card {
+        background: rgba(13, 10, 46, 0.6);
+        border: 1px solid rgba(124, 58, 237, 0.2);
+        border-radius: 14px;
+        padding: 18px 22px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        min-width: 110px;
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+      .quick-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 0%, rgba(124,58,237,0.15) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+      .quick-card:hover {
+        border-color: rgba(124, 58, 237, 0.5);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(124, 58, 237, 0.2), 0 0 20px rgba(6,182,212,0.1);
+      }
+      .quick-card:hover::before { opacity: 1; }
+
+      .quick-card .card-icon {
+        font-size: 1.6rem;
+        filter: drop-shadow(0 0 8px currentColor);
+      }
+      .quick-card .card-label {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+        color: var(--text-mid);
+        text-transform: uppercase;
+        text-align: center;
+      }
+      .quick-card:hover .card-label { color: var(--star-white); }
+
+      /* Subject badge colors */
+      .card-science .card-icon { color: var(--glow-cyan); }
+      .card-math .card-icon { color: #a78bfa; }
+      .card-history .card-icon { color: #f59e0b; }
+      .card-code .card-icon { color: var(--glow-rose); }
+      .card-space .card-icon { color: #818cf8; }
+      .card-bio .card-icon { color: #34d399; }
+
+      /* == PARTICLE CANVAS == */
+      #cosmos-canvas { position: fixed; inset: 0; z-index: 0; }
+
+      /* == ELECTRON ORBIT ANIMATION (logo) == */
+      @keyframes orbitY {
+        0%   { transform: rotateX(60deg) rotateZ(0deg); }
+        100% { transform: rotateX(60deg) rotateZ(360deg); }
+      }
+      @keyframes orbitZ {
+        0%   { transform: rotateZ(0deg); }
+        100% { transform: rotateZ(360deg); }
+      }
+      @keyframes orbitDiag {
+        0%   { transform: rotateX(60deg) rotateZ(60deg); }
+        100% { transform: rotateX(60deg) rotateZ(420deg); }
+      }
+
+      /* Scrollbar for tab-view area if needed */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,0.6); }
+
+      /* == STATUS BAR == */
+      #status-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 22px;
+        background: rgba(7, 5, 26, 0.92);
+        border-top: 1px solid rgba(124,58,237,0.15);
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        gap: 16px;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+      }
+      .status-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+        color: var(--text-dim);
+        text-transform: uppercase;
+      }
+      .status-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 6px #34d399;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+      .status-right {
+        margin-left: auto;
+        color: rgba(124,58,237,0.6);
+      }
     </style>
-    <script>
-      window.onload = function () {
-        if (!localStorage.getItem("discordAlertShown")) {
-          alert("Join our discord.gg/XygZfmMM86 for bonuses, updates, links, and more!");
-          localStorage.setItem("discordAlertShown", "true");
-        }
-      };
-    </script>
   </head>
 
   <body>
+    <!-- Cosmos starfield -->
+    <canvas id="cosmos-canvas"></canvas>
+
     <div id="small-screen-overlay">
-      UV Static 2.0 doesn't support smaller screens. Please use UV Static 2.0 on a larger screen.
+      ⚛ ATOM requires a larger display.<br>
+      <span style="font-size:0.75rem;opacity:0.5;margin-top:8px;display:block;letter-spacing:0.1em;">Please open on desktop.</span>
     </div>
 
-
-  <div id="nav"></div>
-  <div id="main-content"></div>
-
+    <div id="nav"></div>
+    <div id="main-content"></div>
 
     <div id="tab-view" class=""></div>
+
+    <!-- Nav chrome -->
     <div class="sidebar-container">
       <header>
         <div class="page-data">
           <span id="controls">
+            <!-- Home / Logo -->
             <button onclick="window.location.href='/'">
-              <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-              <svg
-   width="38.454208mm"
-   height="24.726074mm"
-   viewBox="0 0 38.454208 24.726074"
-   version="1.1"
-   id="svg1"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <g
-     id="layer1"
-     transform="translate(-145.0951,-136.5279)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.9681px;font-family:'Dallas Print Shop';-inkscape-font-specification:'Dallas Print Shop';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
-       x="142.33917"
-       y="161.25397"
-       id="text2"><tspan
-         id="tspan1"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Krungthep;-inkscape-font-specification:Krungthep;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
-         x="142.33917"
-         y="161.25397">v2</tspan></text>
-  </g>
-</svg>
-
-           
-
+              <div class="atom-logo-wrap">
+                <!-- Inline atom SVG icon -->
+                <svg class="atom-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Nucleus -->
+                  <circle cx="20" cy="20" r="3.5" fill="url(#nucGrad)"/>
+                  <!-- Orbit 1 -->
+                  <ellipse cx="20" cy="20" rx="16" ry="5" stroke="url(#orb1)" stroke-width="1.2" fill="none" transform="rotate(0 20 20)"/>
+                  <!-- Orbit 2 -->
+                  <ellipse cx="20" cy="20" rx="16" ry="5" stroke="url(#orb2)" stroke-width="1.2" fill="none" transform="rotate(60 20 20)"/>
+                  <!-- Orbit 3 -->
+                  <ellipse cx="20" cy="20" rx="16" ry="5" stroke="url(#orb3)" stroke-width="1.2" fill="none" transform="rotate(120 20 20)"/>
+                  <!-- Electrons -->
+                  <circle cx="36" cy="20" r="2" fill="#06b6d4"/>
+                  <circle cx="12" cy="11" r="2" fill="#7c3aed"/>
+                  <circle cx="12" cy="29" r="2" fill="#e11d7a"/>
+                  <defs>
+                    <radialGradient id="nucGrad" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#e8e4ff"/>
+                      <stop offset="100%" stop-color="#7c3aed"/>
+                    </radialGradient>
+                    <linearGradient id="orb1" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8"/>
+                      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.2"/>
+                    </linearGradient>
+                    <linearGradient id="orb2" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.8"/>
+                      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.2"/>
+                    </linearGradient>
+                    <linearGradient id="orb3" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#e11d7a" stop-opacity="0.8"/>
+                      <stop offset="100%" stop-color="#e11d7a" stop-opacity="0.2"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="atom-wordmark">AT<span>O</span>M</div>
+              </div>
               <p class="tooltip">Home</p>
             </button>
-            <!-- <p class="logo-name">RED Browse</p> -->
+
             <span>
               <button id="page-back">
-                <ion-icon
-                  name="arrow-back-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+                <ion-icon name="arrow-back-outline" class="icon hover-focus1"></ion-icon>
                 <p class="tooltip">Back</p>
               </button>
               <button id="page-forward">
-                <ion-icon
-                  name="arrow-forward-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+                <ion-icon name="arrow-forward-outline" class="icon hover-focus1"></ion-icon>
                 <p class="tooltip">Forward</p>
               </button>
               <button id="page-refresh">
-                <ion-icon
-                  name="refresh-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+                <ion-icon name="refresh-outline" class="icon hover-focus1"></ion-icon>
                 <p class="tooltip">Refresh</p>
               </button>
               <button id="options-btn">
-                <ion-icon
-                  name="menu-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+                <ion-icon name="menu-outline" class="icon hover-focus1"></ion-icon>
                 <p class="tooltip">Menu</p>
               </button>
             </span>
           </span>
+
           <form id="url-form">
             <input
               type="text"
               id="url-input"
               onfocus="this.setSelectionRange(0, this.value.length)"
-              class="hover-focus2"
-              placeholder="Search or enter URL"
+              placeholder="Search or enter a URL"
               autocomplete="off"
               autocorrect="off"
               spellcheck="false"
             />
           </form>
-          <button id="new-tab" class="hover-focus2">
-            <ion-icon name="add-outline" class="icon"></ion-icon>
+
+          <button id="new-tab">
+            <ion-icon name="add-outline"></ion-icon>
             <span>New Tab</span>
           </button>
         </div>
@@ -163,17 +741,147 @@ Developed by technonyte0
       </header>
     </div>
 
+    <!-- == MENU == -->
     <div id="menu-overlay">
+      <div class="menu-label">Tools</div>
       <div class="option" id="devtools-option">Developer Tools</div>
       <div class="option" id="abc-option">Open in about:blank</div>
+      <div class="menu-divider"></div>
+      <div class="menu-label">Links</div>
       <div class="option" id="git-option">GitHub</div>
     </div>
+
+    <!-- == STATUS BAR == -->
+    <div id="status-bar">
+      <div class="status-item">
+        <div class="status-dot"></div>
+        <span>Secure</span>
+      </div>
+      <div class="status-item" id="clock-display">--:--</div>
+        <div class="status-item status-right" style="font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.15em;">
+        ⚛ ATOM
+      </div>
+    </div>
+
     <script>
+      // == MENU TOGGLE ==
       const optionsBtn = document.getElementById("options-btn");
       const overlay = document.getElementById("menu-overlay");
-      optionsBtn.addEventListener("click", () => {
+      optionsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
         overlay.classList.toggle("active");
       });
+      document.addEventListener("click", () => overlay.classList.remove("active"));
+      overlay.addEventListener("click", e => e.stopPropagation());
+
+      // == CLOCK ==
+      function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        document.getElementById('clock-display').textContent = `${h}:${m}`;
+      }
+      updateClock();
+      setInterval(updateClock, 10000);
+
+
+
+      // == COSMOS CANVAS ==
+      (function() {
+        const canvas = document.getElementById('cosmos-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let W, H, stars = [], nebulaClouds = [];
+
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+
+        function initStars() {
+          stars = [];
+          for (let i = 0; i < 280; i++) {
+            stars.push({
+              x: Math.random() * W,
+              y: Math.random() * H,
+              r: Math.random() * 1.4 + 0.2,
+              alpha: Math.random() * 0.8 + 0.2,
+              twinkleSpeed: Math.random() * 0.015 + 0.005,
+              twinkleOffset: Math.random() * Math.PI * 2,
+              color: ['#e8e4ff','#c4b5fd','#93c5fd','#bfdbfe'][Math.floor(Math.random()*4)]
+            });
+          }
+        }
+
+        function initNebula() {
+          nebulaClouds = [
+            { x: W * 0.15, y: H * 0.25, rx: 260, ry: 180, color1: 'rgba(124,58,237,0.06)', color2: 'rgba(124,58,237,0)', angle: -0.3 },
+            { x: W * 0.75, y: H * 0.6,  rx: 320, ry: 220, color1: 'rgba(6,182,212,0.05)',   color2: 'rgba(6,182,212,0)',   angle: 0.5  },
+            { x: W * 0.5,  y: H * 0.8,  rx: 280, ry: 150, color1: 'rgba(225,29,122,0.04)',  color2: 'rgba(225,29,122,0)',  angle: 0.2  },
+            { x: W * 0.88, y: H * 0.15, rx: 200, ry: 140, color1: 'rgba(167,139,250,0.06)', color2: 'rgba(167,139,250,0)', angle: -0.6 },
+          ];
+        }
+
+        let t = 0;
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // Deep space gradient
+          const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
+          bg.addColorStop(0, '#0d0a2e');
+          bg.addColorStop(0.5, '#07051a');
+          bg.addColorStop(1, '#03020a');
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, W, H);
+
+          // Nebula clouds
+          nebulaClouds.forEach(nc => {
+            ctx.save();
+            ctx.translate(nc.x, nc.y);
+            ctx.rotate(nc.angle);
+            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, Math.max(nc.rx, nc.ry));
+            grad.addColorStop(0, nc.color1);
+            grad.addColorStop(1, nc.color2);
+            ctx.scale(nc.rx / Math.max(nc.rx, nc.ry), nc.ry / Math.max(nc.rx, nc.ry));
+            ctx.beginPath();
+            ctx.arc(0, 0, Math.max(nc.rx, nc.ry), 0, Math.PI * 2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.restore();
+          });
+
+          // Stars
+          t += 0.016;
+          stars.forEach(s => {
+            const alpha = s.alpha * (0.6 + 0.4 * Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset));
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = s.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            // Glow on brighter stars
+            if (s.r > 1.0) {
+              ctx.beginPath();
+              ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+              const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 3);
+              glow.addColorStop(0, s.color.replace(')', ',0.4)').replace('rgb','rgba'));
+              glow.addColorStop(1, 'rgba(0,0,0,0)');
+              ctx.fillStyle = glow;
+              ctx.globalAlpha = alpha * 0.5;
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+          });
+
+          requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => { resize(); initStars(); initNebula(); });
+        resize();
+        initStars();
+        initNebula();
+        draw();
+      })();
     </script>
   </body>
 </html>
