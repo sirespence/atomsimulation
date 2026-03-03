@@ -1,0 +1,8 @@
+{
+  "name": "atomsimulation",
+  "version": "2.0.0",
+  "scripts": {
+    "build": "echo 'building atoms...'",
+    "install": "echo 'ready to launch'"
+  }
+}
